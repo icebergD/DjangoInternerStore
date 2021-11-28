@@ -1,1 +1,1 @@
-"# DjangoInternerStore" 
+"# DjangoInternetStore" 
