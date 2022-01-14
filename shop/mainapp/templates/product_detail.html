@@ -17,16 +17,17 @@
 		<h3>{{ product.title }}</h3>
 		<p>Цена: {{ product.price }} сум</p>
 		<p>Описание: {{ product.description }} </p>
+		<a href="{% url 'add_to_cart' ct_model=ct_model slug=product.slug %}"><button class="btn btn-danger">Добавить в корзину</button></a>
 	</div>
 	<p class="mt-4">Характеристики:</p>
 
 	{{ product|product_spec}}
 
-	{% if product.category.slug == 'notebooks' %}
+	<!--{% if product.category.slug == 'notebooks' %}
 		{% include 'notebook_specification.html' %}
 	{% else %}
 		{% include 'smartphone_specification.html' %}
-	{% endif %}
+	{% endif %}-->
 </div>
 	
 

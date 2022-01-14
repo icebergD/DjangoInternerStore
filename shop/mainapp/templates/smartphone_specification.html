@@ -28,10 +28,13 @@
       <td>нету</td>
       {% endif %}
     </tr>
+    {% if product.sd == True %}
     <tr>
       <td>Максимальный объем встраеваемой памяти</td>
       <td>{{ product.sd_volume_max }}</td>
     </tr>
+    {% endif %}
+    
     <tr>
       <td>Главная камера</td>
       <td>{{ product.main_cam_mp }}</td>

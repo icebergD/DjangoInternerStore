@@ -1,0 +1,22 @@
+from mainapp.models import Notebook, CartProduct, Cart
+from django.contrib.auth import get_user_model
+from mainapp.models import Customer
+User = get_user_model()
+u = User.objects.first()
+u
+customer = Customer.objects.create(user=u, phone='12345',adress='Baker Street')
+customer
+notebook = Notebook.objects.first()
+notebook
+c = Cart.objects.create(owner=customer, final_price=0)
+c
+c.in_order
+c.for_anonymus_user
+cp = CartProduct.objects.create(content_object=notebook, user=customer,cart=c, final_price=notebook.price)
+cp
+cp.qty
+cp.final_price
+cart = Cart.objects.get(pk=1)
+cart
+cart.products.add(cp)
+cart.products.all()
