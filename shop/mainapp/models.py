@@ -74,6 +74,7 @@ class CategoryManager(models.Manager):
 
 
 class Category(models.Model):
+
 	name = models.CharField(max_length=255, verbose_name='Имя категории')
 	slug = models.SlugField(unique=True)
 	objects = CategoryManager()
@@ -99,10 +100,13 @@ class Product(models.Model):
 	slug = models.SlugField(unique=True)
 	image = models.ImageField(verbose_name='Изображение')
 	description = models.TextField(verbose_name='Описание', null=True)
-	price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена')
+	price = models.DecimalField(max_digits=11, decimal_places=2, verbose_name='Цена')
 
 	def __str__(self):
 		return '{} : {}'.format(self.category.name, self.title)
+
+	def get_model_name(self):
+		return self.__class__.__name__.lower()
 
 	# def save(self, *args, **kwargs):
 	# 	# image = self.image
@@ -127,6 +131,7 @@ class Product(models.Model):
 	# 	super().save(*args, **kwargs)
 
 class Notebook(Product):
+
 	diagonal = models.CharField(max_length=255, verbose_name='Диагональ')
 	display = models.CharField(max_length=255, verbose_name='Тип дисплея')
 	prossesor_freq = models.CharField(max_length=255, verbose_name='Частота процессора')
@@ -140,8 +145,11 @@ class Notebook(Product):
 	def get_absolute_url(self):
 		return get_product_url(self, 'product_detail')
 
+	
+
 
 class Smartphone(Product):
+
 	diagonal = models.CharField(max_length=255, verbose_name='Диагональ')
 	display = models.CharField(max_length=255, verbose_name='Тип дисплея')
 	resolution = models.CharField(max_length=255, verbose_name='Разрешение экрана')
@@ -162,6 +170,7 @@ class Smartphone(Product):
 
 
 
+
 class CartProduct(models.Model):
 
 	user = models.ForeignKey('Customer', verbose_name='Покупатель', on_delete=models.CASCADE)
@@ -170,7 +179,7 @@ class CartProduct(models.Model):
 	object_id = models.PositiveIntegerField()
 	content_object = GenericForeignKey('content_type','object_id')
 	qty = models.PositiveIntegerField(default=1)
-	final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая цена')
+	final_price = models.DecimalField(max_digits=11, decimal_places=2, verbose_name='Общая цена')
 
 	def __str__(self):
 		return 'Продукт: {} (для корзины)'.format(self.content_object.title)
@@ -182,17 +191,28 @@ class CartProduct(models.Model):
 
 
 
+
 class Cart(models.Model):
 
 	owner = models.ForeignKey('Customer', null=True, verbose_name='Владелец', on_delete=models.CASCADE)
 	products = models.ManyToManyField(CartProduct, blank=True, related_name='related_cart')
 	total_products = models.PositiveIntegerField(default=0)
-	final_price = models.DecimalField(max_digits=9, default=0, decimal_places=2, verbose_name='Общая цена')
+	final_price = models.DecimalField(max_digits=11, default=0, decimal_places=2, verbose_name='Общая цена')
 	in_order = models.BooleanField(default=False)
 	for_anonymus_user = models.BooleanField(default=False)
 
 	def __str__(self):
 		return str(self.id)
+
+	def save(self, *args, **kwargs):
+		cart_data = self.products.aggregate(models.Sum('final_price'), models.Count('id'))
+		if cart_data.get('final_price__sum'):
+			self.final_price = cart_data['final_price__sum']
+		else:
+			self.final_price = 0
+		self.total_products = cart_data['id__count']
+		super().save(*args, **kwargs)
+
 
 
 class Customer(models.Model):
