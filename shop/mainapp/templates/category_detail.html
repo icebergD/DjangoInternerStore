@@ -2,10 +2,38 @@
 
 
 {% block content %}
+<nav aria-label="breadcrumb">
+  	<ol class="breadcrumb">
+    	<li class="breadcrumb-item"><a href="{% url 'base' %}">Главная</a></li>
+    	<li class="breadcrumb-item active">{{ category.name }}</li>
+  	</ol>
+</nav>
 
-{{ category.name }}
+<div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+	{% for product in category_products %}
+	<div class="col mb-5">
+		<div class="card h-100">
+			<!-- Product image-->
+			<a href="{{ product.get_absolute_url }}"><img class="card-img-top" src="{{ product.image.url }}" alt="..." /></a>
+			<!-- Product details-->
+			<div class="card-body p-4">
+				<div class="text-center">
+					<!-- Product name-->
+					<a href="{{ product.get_absolute_url }}"><h5 class="fw-bolder">{{ product.title }}</h5></a>
+					<!-- Product price-->
+					{{ product.price }} сум.
+				</div>
+				<a href="{% url 'add_to_cart' ct_model=product.get_model_name slug=product.slug %}">
+					<button class="btn btn-danger">Добавить в корзину</button>
+				</a>
+			</div>
+                            
+		</div>
+	</div>
+	{% endfor %}
 
-
+<!-- row -->
+</div>
 
 {% endblock content %}
 

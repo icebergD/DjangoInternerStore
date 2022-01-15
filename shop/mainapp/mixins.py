@@ -1,12 +1,22 @@
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import View
 
-from .models import Category, Cart, Customer
+from .models import Category, Cart, Customer, Notebook, Smartphone
 
 class CategoryDetailMixin(SingleObjectMixin):
 
+	CATEGORY_SLUG2PRODUCT_MODEL = {
+		'notebooks': Notebook,
+		'smartphones': Smartphone
+	}
+
 	def get_context_data(self, **kwargs):
-		
+		if isinstance(self.get_object(), Category):
+			model = self.CATEGORY_SLUG2PRODUCT_MODEL[self.get_object().slug]
+			context = super().get_context_data(**kwargs)
+			context['categories'] = Category.objects.get_category_for_dropdown_menu()
+			context['category_products'] = model.objects.all()
+			return context
 		context = super().get_context_data(**kwargs)
 		context['categories'] = Category.objects.get_category_for_dropdown_menu()
 		return context
@@ -29,5 +39,5 @@ class CartMixin(View):
 			if not cart:
 				cart = Cart.objects.create(for_anonymous_user=True)
 		self.cart = cart
-		
+
 		return super().dispatch(request, *args, **kwargs)

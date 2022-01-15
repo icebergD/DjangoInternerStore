@@ -55,10 +55,22 @@
                 </div>
             </div>
         </header>
+
         <!-- Section-->
         <section class="py-5">
             <div class="container px-4 px-lg-5 mt-5">
+                {% if messages %}
+                  {% for message in messages %}
+                  <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                  {% endfor %}
+                {% endif %}
+
                 {% block content %}
+
+
                 <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
                     {% for product in products %}
                     <div class="col mb-5">
@@ -69,16 +81,20 @@
                             <div class="card-body p-4">
                                 <div class="text-center">
                                     <!-- Product name-->
-                                    <a href="{{ product.get_absolute_url }}"><h5 class="fw-bolder">{{ product.title }}</h5></a>
+                                    <a href="{{ product.get_absolute_url }}">
+                                        <h5 class="fw-bolder">{{ product.title }}</h5>
+                                    </a>
                                     <!-- Product price-->
-                                    {{ product.price }}
+                                    {{ product.price }} сум.
                                 </div>
+                                <a href="{% url 'add_to_cart' ct_model=product.get_model_name slug=product.slug %}">
+                                    <button class="btn btn-danger">Добавить в корзину</button>
+                                </a>
                             </div>
                             
                         </div>
                     </div>
                     {% endfor %}
-
 
                 <!-- row -->
                 </div>
